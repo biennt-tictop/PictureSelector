@@ -46,5 +46,6 @@
     <color name="ps_color_0077F6">#0077F6</color>
     <color name="ps_color_E4E4E4">#E4E4E4</color>
     <color name="ps_text_manage_color">#000000</color>
+    <color name="ps_background_button_manage_color">#FF96E85D</color>
     <color name="ps_background_limit_color">#DCF6CA</color>
 </resources>
