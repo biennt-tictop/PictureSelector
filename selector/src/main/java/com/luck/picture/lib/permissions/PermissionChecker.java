@@ -124,11 +124,34 @@ public class PermissionChecker {
         return isAllGranted;
     }
 
+    public static boolean isShowLimited(int chooseMode, Context context){
+        if(SdkVersionUtils.isUPSIDE_DOWN_CAKE()){
+            if (chooseMode == SelectMimeType.ofAudio()) {
+                return false;
+            }
+
+            return PermissionChecker.isCheckReadMediaVisualUserSelected(context);
+        }
+
+        return false;
+    }
+
     /**
      * 检查读写权限是否存在
      */
     public static boolean isCheckReadStorage(int chooseMode, Context context) {
-        if (SdkVersionUtils.isTIRAMISU()) {
+        if(SdkVersionUtils.isUPSIDE_DOWN_CAKE()){
+            if (chooseMode == SelectMimeType.ofImage()) {
+                return PermissionChecker.isCheckReadImages(context) || PermissionChecker.isCheckReadMediaVisualUserSelected(context);
+            } else if (chooseMode == SelectMimeType.ofVideo()) {
+                return PermissionChecker.isCheckReadVideo(context) || PermissionChecker.isCheckReadMediaVisualUserSelected(context);
+            } else if (chooseMode == SelectMimeType.ofAudio()) {
+                return PermissionChecker.isCheckReadAudio(context);
+            } else {
+                return (PermissionChecker.isCheckReadImages(context) && PermissionChecker.isCheckReadVideo(context)) || PermissionChecker.isCheckReadMediaVisualUserSelected(context);
+            }
+        }
+        else if (SdkVersionUtils.isTIRAMISU()) {
             if (chooseMode == SelectMimeType.ofImage()) {
                 return PermissionChecker.isCheckReadImages(context);
             } else if (chooseMode == SelectMimeType.ofVideo()) {
@@ -143,6 +166,11 @@ public class PermissionChecker {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public static boolean isCheckReadMediaVisualUserSelected(Context context) {
+        return PermissionChecker.checkSelfPermission(context,
+                new String[]{PermissionConfig.READ_MEDIA_VISUAL_USER_SELECTED});
+    }
 
     /**
      * 检查读取图片权限是否存在

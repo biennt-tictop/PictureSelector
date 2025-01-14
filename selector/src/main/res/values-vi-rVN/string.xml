@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="ps_message_media_limited">Bạn đã cấp quyền truy cập cho một số lượng nhất định các ảnh và video</string>
+    <string name="ps_manage_media_limited">Quản lý</string>
     <string name="ps_camera_roll">Camera cuộn</string>
     <string name="ps_camera_roll_num">%1$s (%2$d)</string>
     <string name="ps_cancel">Hủy bỏ</string>

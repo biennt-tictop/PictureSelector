@@ -3,7 +3,40 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:id="@+id/ps_view"
     android:layout_height="match_parent">
+
+    <LinearLayout android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:id="@+id/limited_manage"
+        android:visibility="gone"
+        android:padding="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_bar">
+        <LinearLayout android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/ps_limited_selected">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:textSize="14sp"
+                android:layout_marginEnd="10dp"
+                android:layout_height="wrap_content"
+                android:text="@string/ps_message_media_limited"/>
+            <Button
+                android:id="@+id/manage_selected"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:textAllCaps="false"
+                android:textSize="14sp"
+                android:textColor="@color/ps_text_manage_color"
+                android:text="@string/ps_manage_media_limited"
+                android:background="@drawable/ps_limited_manage"/>
+        </LinearLayout>
+    </LinearLayout>
+
 
     <com.luck.picture.lib.widget.RecyclerPreloadView
         android:id="@+id/recycler"
@@ -13,7 +46,7 @@
         app:layout_constraintBottom_toTopOf="@+id/bottom_nar_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title_bar" />
+        app:layout_constraintTop_toBottomOf="@+id/limited_manage" />
 
     <com.luck.picture.lib.widget.MediumBoldTextView
         android:id="@+id/tv_current_data_time"

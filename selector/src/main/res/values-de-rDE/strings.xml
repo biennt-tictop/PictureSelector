@@ -1,4 +1,6 @@
 <resources>
+    <string name="ps_message_media_limited">Sie haben Zugriff auf eine ausgewählte Anzahl von Fotos und Videos gewährt</string>
+    <string name="ps_manage_media_limited">Verwalten</string>
     <string name="ps_camera_roll">Kamerafilm</string>
     <string name="ps_camera_roll_num">%1$s (%2$d)</string>
     <string name="ps_cancel">Abbrechen</string>

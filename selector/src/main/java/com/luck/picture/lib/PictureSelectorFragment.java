@@ -9,6 +9,8 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -91,6 +93,8 @@ public class PictureSelectorFragment extends PictureCommonFragment
     private static int SELECT_ANIM_DURATION = 135;
     private RecyclerPreloadView mRecycler;
     private TextView tvDataEmpty;
+    private LinearLayout limitedManage;
+    private Button manageSelected;
     private TitleBar titleBar;
     private BottomNavBar bottomNarBar;
     private CompleteSelectView completeSelectView;
@@ -238,6 +242,8 @@ public class PictureSelectorFragment extends PictureCommonFragment
         reStartSavedInstance(savedInstanceState);
         isMemoryRecycling = savedInstanceState != null;
         tvDataEmpty = view.findViewById(R.id.tv_data_empty);
+        limitedManage = view.findViewById(R.id.limited_manage);
+        manageSelected = view.findViewById(R.id.manage_selected);
         completeSelectView = view.findViewById(R.id.ps_complete_select);
         titleBar = view.findViewById(R.id.title_bar);
         bottomNarBar = view.findViewById(R.id.bottom_nar_bar);
@@ -248,6 +254,8 @@ public class PictureSelectorFragment extends PictureCommonFragment
         initComplete();
         initRecycler(view);
         initBottomNavBar();
+        initLimited();
+
         if (isMemoryRecycling) {
             recoverSaveInstanceData();
         } else {
@@ -424,28 +432,49 @@ public class PictureSelectorFragment extends PictureCommonFragment
     }
 
 
+    private void requestLoadDataWithPermission(){
+        String[] readPermissionArray = PermissionConfig.getReadPermissionArray(getAppContext(), selectorConfig.chooseMode);
+        onPermissionExplainEvent(true, readPermissionArray);
+        if (selectorConfig.onPermissionsEventListener != null) {
+            onApplyPermissionsEvent(PermissionEvent.EVENT_SOURCE_DATA, readPermissionArray);
+        } else {
+            PermissionChecker.getInstance().requestPermissions(this, readPermissionArray, new PermissionResultCallback() {
+                @Override
+                public void onGranted() {
+                    beginLoadData();
+                }
+
+                @Override
+                public void onDenied() {
+                    handlePermissionDenied(readPermissionArray);
+                }
+            });
+        }
+    }
+
     private void requestLoadData() {
         mAdapter.setDisplayCamera(isDisplayCamera);
         if (PermissionChecker.isCheckReadStorage(selectorConfig.chooseMode, getContext())) {
             beginLoadData();
         } else {
-            String[] readPermissionArray = PermissionConfig.getReadPermissionArray(getAppContext(), selectorConfig.chooseMode);
-            onPermissionExplainEvent(true, readPermissionArray);
-            if (selectorConfig.onPermissionsEventListener != null) {
-                onApplyPermissionsEvent(PermissionEvent.EVENT_SOURCE_DATA, readPermissionArray);
-            } else {
-                PermissionChecker.getInstance().requestPermissions(this, readPermissionArray, new PermissionResultCallback() {
-                    @Override
-                    public void onGranted() {
-                        beginLoadData();
-                    }
-
-                    @Override
-                    public void onDenied() {
-                        handlePermissionDenied(readPermissionArray);
-                    }
-                });
-            }
+            requestLoadDataWithPermission();
+//            String[] readPermissionArray = PermissionConfig.getReadPermissionArray(getAppContext(), selectorConfig.chooseMode);
+//            onPermissionExplainEvent(true, readPermissionArray);
+//            if (selectorConfig.onPermissionsEventListener != null) {
+//                onApplyPermissionsEvent(PermissionEvent.EVENT_SOURCE_DATA, readPermissionArray);
+//            } else {
+//                PermissionChecker.getInstance().requestPermissions(this, readPermissionArray, new PermissionResultCallback() {
+//                    @Override
+//                    public void onGranted() {
+//                        beginLoadData();
+//                    }
+//
+//                    @Override
+//                    public void onDenied() {
+//                        handlePermissionDenied(readPermissionArray);
+//                    }
+//                });
+//            }
         }
     }
 
@@ -587,6 +616,17 @@ public class PictureSelectorFragment extends PictureCommonFragment
         mRecycler.smoothScrollToPosition(0);
     }
 
+    private void initLimited(){
+        boolean isLimited = PermissionChecker.isShowLimited(selectorConfig.chooseMode, getContext());
+        if(isLimited){
+            limitedManage.setVisibility(View.VISIBLE);
+        }else{
+            limitedManage.setVisibility(View.GONE);
+        }
+        manageSelected.setOnClickListener(v -> {
+            requestLoadDataWithPermission();
+        });
+    }
 
     private void initBottomNavBar() {
         bottomNarBar.setBottomNavBarStyle();
@@ -773,8 +813,10 @@ public class PictureSelectorFragment extends PictureCommonFragment
         int listBackgroundColor = selectMainStyle.getMainListBackgroundColor();
         if (StyleUtils.checkStyleValidity(listBackgroundColor)) {
             mRecycler.setBackgroundColor(listBackgroundColor);
+            limitedManage.setBackgroundColor(listBackgroundColor);
         } else {
             mRecycler.setBackgroundColor(ContextCompat.getColor(getAppContext(), R.color.ps_color_black));
+            limitedManage.setBackgroundColor(ContextCompat.getColor(getAppContext(), R.color.ps_color_black));
         }
         int imageSpanCount = selectorConfig.imageSpanCount <= 0 ? PictureConfig.DEFAULT_SPAN_COUNT : selectorConfig.imageSpanCount;
         if (mRecycler.getItemDecorationCount() == 0) {
